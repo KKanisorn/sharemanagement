@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -12,32 +13,35 @@ export default function Register() {
 
     const handleRegister = async (e)  => {
         e.preventDefault();
-        console.log("Register")
+        if (password !== repassword) {
+            alert("Passwords do not match!");
+            return; // Stop the registration if passwords don't match
+        }
+        else if(firstName === "" || lastName === "" || email ==="" || password === "" || repassword === ""){
+            alert("Some of the input box is empty");
+        }
+        else{
+            try{
+                const response = await axios.post("http://localhost:5000/register", {
+                    firstName,
+                    lastName,
+                    email,
+                    password,
+                    repassword
+                });
 
-
-
-        try{
-            const response = await fetch("http://localhost:5000/register",{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({firstName, lastName, email, password, repassword})
-            })
-
-            if(response.ok){
-                const data = await response.json()
+                const data = response.data
                 console.log("Data from Server: ", data.message)
                 alert(data.message)
                 if(data.message === "Register Successful"){
                     navigate("/dashboard");
+
                 }
             }
+            catch (error){
+                console.log("Error", error)
+            }
         }
-        catch (error){
-            console.log("Error", error)
-        }
-
 
         setFirstName("");
         setLastName("");
@@ -50,11 +54,11 @@ export default function Register() {
     return (
         <div>
             <div className="flex justify-center items-center h-screen flex-col">
-                <div className="bg-white text-gray-800 p-10 rounded-lg shadow-lg max-w-2xl text-center">
-                    <h1 className="text-3xl font-bold">Register</h1>
-                    <div className="flex flex-row">
-                        <h3>First Name</h3>
-                        <h3>Last Name</h3>
+                <div className="bg-white text-gray-800 p-10 rounded-lg shadow-lg max-w-2xl">
+                    <h1 className="text-3xl font-bold text-center">Register</h1>
+                    <div className="flex flex-row mt-5 font-bold">
+                        <h3>First Name:</h3>
+                        <h3 className="ml-[10rem]">Last Name:</h3>
                     </div>
                     <div className="flex flex-row h-12 text-2xl space-x-1">
                         <input className="border-2 pl-2 w-[15rem]" value={firstName}
@@ -62,16 +66,16 @@ export default function Register() {
                         <input className="border-2 pl-2 w-[15rem]" value={lastName}
                                onChange={(e) => setLastName(e.target.value)}/>
                     </div>
-                    <h3>Email</h3>
-                    <input className="w-[30rem] h-12 border-2 pl-2" type="email" value={email}
+                    <h3 className="font-bold">Email</h3>
+                    <input className="text-2xl w-[30rem] h-12 border-2 pl-2" type="email" value={email}
                            onChange={(e) => setEmail(e.target.value)}/>
-                    <h3>Password</h3>
-                    <input className="w-[30rem] h-12 border-2 pl-2" type="password" value={password}
+                    <h3 className="font-bold">Password</h3>
+                    <input className="text-2xl w-[30rem] h-12 border-2 pl-2" type="password" value={password}
                            onChange={(e) => setPassword(e.target.value)}/>
-                    <h3>Re-Password</h3>
-                    <input className="w-[30rem] h-12 border-2 pl-2" type="password" value={repassword}
+                    <h3 className="font-bold">Re-Password</h3>
+                    <input className="text-2xl w-[30rem] h-12 border-2 pl-2" type="password" value={repassword}
                            onChange={(e) => setRepassword(e.target.value)}/>
-                    <div>
+                    <div className="text-center">
                         <button className="mt-5 border-2 rounded-full bg-blue-400 w-[5rem] h-10" onClick={handleRegister}>Register</button>
                     </div>
 

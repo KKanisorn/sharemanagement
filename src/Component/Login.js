@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
 export default function Login(){
@@ -14,21 +15,16 @@ export default function Login(){
         console.log("Password:", password);
 
         try{
-            const response = await fetch('http://localhost:5000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({emailOrUsername, password})
-            })
+            const response = await axios.post('http://localhost:5000/login', {
+                emailOrUsername,
+                password
+            });
 
-            if(response.ok){
-                const data = await response.json()
-                console.log("Data from Server: ", data.message)
-                alert(data.message)
-                if(data.message === "Login Successful"){
-                    navigate("/dashboard");
-                }
+            const data = response.data
+            console.log("Data from Server: ", data.message)
+            alert(data.message)
+            if(data.message === "Login Successful"){
+                navigate("/dashboard");
             }
 
 
