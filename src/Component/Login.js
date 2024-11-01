@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Login(){
+    const navigate = useNavigate();
+
     const [emailOrUsername, setEmailOrUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
+        e.preventDefault();
         console.log("Email or Username:", emailOrUsername);
         console.log("Password:", password);
 
@@ -17,6 +21,17 @@ export default function Login(){
                 },
                 body: JSON.stringify({emailOrUsername, password})
             })
+
+            if(response.ok){
+                const data = await response.json()
+                console.log("Data from Server: ", data.message)
+                alert(data.message)
+                if(data.message === "Login Successful"){
+                    navigate("/dashboard");
+                }
+            }
+
+
         } catch (error){
             console.log("Error", error)
         }
@@ -34,7 +49,7 @@ export default function Login(){
                     <input className="w-[30rem] h-12 border-2 mt-1 rounded text-2xl pl-2 " value={emailOrUsername}
                            onChange={(e) => setEmailOrUsername(e.target.value)}/>
                     <h3 className=" mt-7 font-bold flex justify-start">Password:</h3>
-                    <input className="w-[30rem] h-12 border-2 mt-1 text-2xl pl-2" value={password}
+                    <input className="w-[30rem] h-12 border-2 mt-1 text-2xl pl-2" value={password} type="password"
                            onChange={(e) => setPassword(e.target.value)}/>
                     <div>
                         <button className="mt-5 border-2  rounded-full bg-blue-400 w-[4.5rem] h-10"
