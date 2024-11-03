@@ -31,11 +31,10 @@ export default function Register() {
                 });
 
                 const data = response.data
-                console.log("Data from Server: ", data.message)
-                alert(data.message)
-                if(data.message === "Register Successful"){
+                console.log("Data from Server: ", data.token)
+                if (data.token) {
+                    localStorage.setItem('token', data.token); // Save JWT in local storage
                     navigate("/dashboard");
-
                 }
             }
             catch (error){

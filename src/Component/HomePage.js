@@ -7,7 +7,7 @@ export default function HomePage() {
             <div className="font-bold flex justify-end space-x-5 bg-black text-white pt-3 pb-3 pr-10">
                 <Link to="/">Home</Link>
                 <Link to="#">About</Link>
-                <Link to="/login">Login</Link>
+                <Link to="/vaildtoken">Login</Link>
                 <Link to="/register">Register</Link>
             </div>
             <div className="bg-[#e5e5e5] text-black h-screen text-2xl flex items-center justify-center">

@@ -8,6 +8,9 @@ import HomePage from './Component/HomePage'
 import Login from './Component/Login'
 import Register from "./Component/Register";
 import Dashboard from "./Component/Dashboard";
+import Profile from "./Component/ProtectdRoute";
+import ProtectdRoute from "./Component/ProtectdRoute";
+import VaildToken from "./Component/ValidToken";
 
 const router = createBrowserRouter([
     {
@@ -24,7 +27,15 @@ const router = createBrowserRouter([
     },
     {
         path: "dashboard",
-        element: (<Dashboard/>)
+        element:
+            <ProtectdRoute>
+                <Dashboard/>
+            </ProtectdRoute>
+
+    },
+    {
+        path: "vaildtoken",
+        element:<VaildToken/>
     }
 ]);
 
