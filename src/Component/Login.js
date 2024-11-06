@@ -41,6 +41,7 @@ export default function Login(){
         <div className="overflow-hidden h-screen">
             <div className="flex flex-col items-center justify-center h-screen">
                 <div className="bg-white text-gray-800 p-10 rounded-lg shadow-lg max-w-2xl text-center">
+                    <form onSubmit={handleSubmit}>
                     <h1 className="text-3xl font-bold text-center">Login</h1>
                     <h3 className="mt-10 font-bold flex justify-start">Email or username:</h3>
                     <input className="w-[30rem] h-12 border-2 mt-1 rounded text-2xl pl-2 " value={emailOrUsername}
@@ -49,10 +50,11 @@ export default function Login(){
                     <input className="w-[30rem] h-12 border-2 mt-1 text-2xl pl-2" value={password} type="password"
                            onChange={(e) => setPassword(e.target.value)}/>
                     <div>
-                        <button className="mt-5 border-2  rounded-full bg-blue-400 w-[4.5rem] h-10"
-                                onClick={handleSubmit}>Log in
+                        <button type="submit" className="mt-5 border-2  rounded-full bg-blue-400 w-[4.5rem] h-10"
+                                >Log in
                         </button>
                     </div>
+                    </form>
 
                 </div>
             </div>

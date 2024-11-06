@@ -9,6 +9,7 @@ export default function Dashboard() {
     const [tokenTime, setTokenTime ] = useState("")
     const [ isAdd, setIsAdd ] = useState(false);
     const [isDashboard, setIsDashboard] = useState(false);
+    const [isGroupselected, setGroupSelected] = useState(false);
 
 
     const token = localStorage.getItem('token');
@@ -40,26 +41,26 @@ export default function Dashboard() {
         }
 
         fetchMyAPI();
-    }, [token, email]);  // Runs effect only when `token` changes
+    }, [token]);  // Runs effect only when `token` changes
 
 
 
-    const handleAdd = async (e) =>{
-        setIsAdd(true)
-        setIsDashboard(false)
-        console.log(isAdd)
+    const handleAdd = () => {
+        setIsAdd(true);
+        setIsDashboard(false); // Hide the dashboard page when showing the add page
     }
 
-    const handleDashboard = async (e) =>{
+    const handleDashboard = () => {
         setIsDashboard(true);
-        setIsAdd(false)
-        console.log(isDashboard)
+        setIsAdd(false); // Hide the add page when showing the dashboard page
     }
 
+    function groupType(formData){
 
+    }
 
     return (
-        <div>
+        <div className="flex h-screen">
             <div className="flex h-screen w-[15rem] flex-col justify-start bg-gray-200  text-center shadow-lg ">
                 {/*left*/}
                 <div className="flex flex-row py-4 justify-start space-x-3   bg-gray-400 align-middle pl-2">
@@ -78,23 +79,36 @@ export default function Dashboard() {
                     <button className="py-3 hover:bg-gray-300 " onClick={handleDashboard}>Dashboard</button>
                     <button className="py-3 hover:bg-gray-300" onClick={handleAdd}>Add</button>
                 </div>
-
             </div>
 
-            <div>
-                {/*right*/}
+            <div className="flex-1 ">
+                {/* Dashboard Page */}
+                {isDashboard && (
+                    <div key="dashboard" className="bg-gray-300 text-black text-center font-bold text-xl py-[1.4rem]">
+                        <h1>Dashboard Page</h1>
+                    </div>
+                )}
 
-                {/*-----------------DASHBOARD PAGE-----------*/}
-                {isDashboard && <div>
-
-                </div>}
-
-
-                {/*------------------ADD PAGE----------------*/}
-                {isAdd && <div>
-
-                </div>}
-
+                {/* Add Page */}
+                {isAdd && (
+                    <div key="add" className="">
+                        <div className="bg-gray-300 text-black text-center font-bold text-xl py-[1.4rem]">
+                            <h1>เพิ่มวง</h1>
+                        </div>
+                        <div>
+                            <div className="">
+                                <form className=" space-x-2">
+                                    <label>Group Type:
+                                    <select className="border border-4 py-1 px-1 focus:outline-none focus:shadow-outline rounded shadow">
+                                        <option>วงขั้นบรรได</option>
+                                        <option>วงปิดต้น</option>
+                                    </select>
+                                    </label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
