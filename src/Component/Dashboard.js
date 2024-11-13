@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Dashboard() {
@@ -9,9 +10,25 @@ export default function Dashboard() {
     const [tokenTime, setTokenTime ] = useState("")
     const [ isAdd, setIsAdd ] = useState(false);
     const [isDashboard, setIsDashboard] = useState(false);
-    const [isGroupselected, setGroupSelected] = useState(false);
+    const [isStairSelected, setIsStairSelected] = useState(false);
+    const [isFullFundSelected, setIsFullFundSelected] = useState(false);
+    const [formData, setFormData] = useState({
+        houseName: '',
+        groupName: '',
+        principalAmount: '',
+        handsReceived: '',
+        totalHands: '',
+        days: '',
+        perHandAmount: '',
+        handsDeducted: '',
+        handsSent: '',
+        maintenanceFee: '',
+        startDate: '',
+        email: ''
+    });
 
 
+    const navigate = useNavigate();
     const token = localStorage.getItem('token');
     // console.log(token);
 
@@ -22,6 +39,13 @@ export default function Dashboard() {
             if (token) {
                 const decoded = jwtDecode(token);
                 setEmail(decoded["sub"]); // Update state only when token is present
+                const currentTime = Date.now() / 1000; // Current time in seconds
+                if (decoded.exp < currentTime) {
+                    console.log("Token has expired");
+                    // Handle token expiration here, e.g., redirect to login or request a new token
+                    localStorage.removeItem('token');
+                    navigate("/login");
+                }
 
                 try {
                     const response = await axios.get(`http://localhost:5000/getname/${decoded["sub"]}`, {
@@ -55,9 +79,38 @@ export default function Dashboard() {
         setIsAdd(false); // Hide the add page when showing the dashboard page
     }
 
-    function groupType(formData){
-
+    const handleSelectChange = (e) => {
+        const selectedValue = e.target.value;
+        console.log("Selected group type:", selectedValue);
+        // Add any additional logic you need here
+        if(selectedValue === "วงขั้นบรรได"){
+            setIsStairSelected(true);
+            setIsFullFundSelected(false);
+        }else if(selectedValue === "วงปิดต้น"){
+            setIsFullFundSelected(true);
+            setIsStairSelected(false);
+        }
     }
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleAddGroup = async (e) => {
+        e.preventDefault();
+        // Add logic to handle form submission
+        console.log(formData.houseName);
+        try {
+            formData.email = email;
+            const response = await axios.post("http://localhost:5000/addStairGroup", formData, {
+                headers: { Authorization: `Bearer ${token}` }
+            }
+        )} catch (e) {
+            console.log("Error during post data")
+        }
+    };
+
 
     return (
         <div className="flex h-screen">
@@ -95,17 +148,118 @@ export default function Dashboard() {
                         <div className="bg-gray-300 text-black text-center font-bold text-xl py-[1.4rem]">
                             <h1>เพิ่มวง</h1>
                         </div>
-                        <div>
+                        <div className="flex justify-start">
                             <div className="">
                                 <form className=" space-x-2">
                                     <label>Group Type:
-                                    <select className="border border-4 py-1 px-1 focus:outline-none focus:shadow-outline rounded shadow">
+                                    <select className="border border-4 py-1 px-1 focus:outline-none focus:shadow-outline rounded shadow" onChange={(e) => handleSelectChange(e)}>
+                                        <option>--เลือกวง--</option>
                                         <option>วงขั้นบรรได</option>
                                         <option>วงปิดต้น</option>
                                     </select>
                                     </label>
                                 </form>
                             </div>
+                            {isStairSelected && <div>
+                                <div>
+                                    <form onSubmit={handleAddGroup}>
+                                        <label>ชื่อบ้าน
+                                            <input
+                                                className="border border-2"
+                                                name="houseName"
+                                                value={formData.houseName}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>ชื่อวง
+                                            <input
+                                                className="border border-2"
+                                                name="groupName"
+                                                value={formData.groupName}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>เงินต้น
+                                            <input
+                                                className="border border-2"
+                                                name="principalAmount"
+                                                value={formData.principalAmount}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>มือที่ได้
+                                            <input
+                                                className="border border-2"
+                                                name="handsReceived"
+                                                value={formData.handsReceived}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>มือทั้งหมด
+                                            <input
+                                                className="border border-2"
+                                                name="totalHands"
+                                                value={formData.totalHands}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>จำนวนวัน
+                                            <input
+                                                className="border border-2"
+                                                name="days"
+                                                value={formData.days}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>ส่งมือละ
+                                            <input
+                                                className="border border-2"
+                                                name="perHandAmount"
+                                                value={formData.perHandAmount}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>หักรับกี่มือ
+                                            <input
+                                                className="border border-2"
+                                                name="handsDeducted"
+                                                value={formData.handsDeducted}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>มือที่ส่งแล้ว
+                                            <input
+                                                className="border border-2"
+                                                name="handsSent"
+                                                value={formData.handsSent}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>ค่าดูแล
+                                            <input
+                                                className="border border-2"
+                                                name="maintenanceFee"
+                                                value={formData.maintenanceFee}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <label>วันที่เริ่ม
+                                            <input
+                                                className="border border-2"
+                                                name="startDate"
+                                                type="date"
+                                                value={formData.startDate}
+                                                onChange={handleChange}
+                                            />
+                                        </label>
+                                        <button className="border border-2">Submit</button>
+                                    </form>
+                                </div>
+                            </div>}
+
+                            {isFullFundSelected && <div>
+                                <h2>Hello 2</h2>
+                            </div>}
                         </div>
                     </div>
                 )}
