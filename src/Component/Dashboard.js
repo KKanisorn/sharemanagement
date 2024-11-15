@@ -89,6 +89,9 @@ export default function Dashboard() {
         }else if(selectedValue === "วงปิดต้น"){
             setIsFullFundSelected(true);
             setIsStairSelected(false);
+        }else{
+            setIsFullFundSelected(false);
+            setIsStairSelected(false);
         }
     }
 
@@ -259,6 +262,9 @@ export default function Dashboard() {
 
                             {isFullFundSelected && <div>
                                 <h2>Hello 2</h2>
+                            </div>}
+                            {!isFullFundSelected && !isStairSelected &&<div>
+                                <h1>Hello Select it</h1>
                             </div>}
                         </div>
                     </div>
