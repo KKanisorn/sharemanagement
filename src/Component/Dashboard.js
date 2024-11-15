@@ -59,9 +59,19 @@ export default function Dashboard() {
                 } catch (error) {
                     console.error('Error fetching dashboard data:', error);
                 }
+                try{
+                    const response2 = await axios.get(`http://localhost:5000/getShareStairIfPay/${decoded["sub"]}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                }catch (error){
+                    console.log(error)
+                }
             } else {
                 console.log("No token found");
             }
+
         }
 
         fetchMyAPI();
@@ -140,8 +150,14 @@ export default function Dashboard() {
             <div className="flex-1 ">
                 {/* Dashboard Page */}
                 {isDashboard && (
-                    <div key="dashboard" className="bg-gray-300 text-black text-center font-bold text-xl py-[1.4rem]">
-                        <h1>Dashboard Page</h1>
+                    <div >
+                        <div className="bg-gray-300 text-black text-center font-bold text-xl py-[1.4rem]">
+                            <h1>Dashboard Page</h1>
+                        </div>
+                        <div>
+
+                        </div>
+
                     </div>
                 )}
 
