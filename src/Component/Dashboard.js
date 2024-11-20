@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import {useEffect, useState} from "react";
+import React from 'react';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +13,7 @@ export default function Dashboard() {
     const [isDashboard, setIsDashboard] = useState(false);
     const [isStairSelected, setIsStairSelected] = useState(false);
     const [isFullFundSelected, setIsFullFundSelected] = useState(false);
+    const [shareData, setShareData] = useState([]);
     const [formData, setFormData] = useState({
         houseName: '',
         groupName: '',
@@ -35,8 +37,9 @@ export default function Dashboard() {
 
 
     useEffect(() => {
+        let isMounted = true;
         async function fetchMyAPI() {
-            if (token) {
+            if (token && isMounted) {
                 const decoded = jwtDecode(token);
                 setEmail(decoded["sub"]); // Update state only when token is present
                 const currentTime = Date.now() / 1000; // Current time in seconds
@@ -65,6 +68,9 @@ export default function Dashboard() {
                             'Authorization': `Bearer ${token}`
                         }
                     });
+
+                    console.log(response2.data)
+                    setShareData(response2.data);
                 }catch (error){
                     console.log(error)
                 }
@@ -75,6 +81,9 @@ export default function Dashboard() {
         }
 
         fetchMyAPI();
+        return () => {
+            isMounted = false; // Cleanup to prevent double execution
+        };
     }, [token]);  // Runs effect only when `token` changes
 
 
@@ -151,11 +160,64 @@ export default function Dashboard() {
                 {/* Dashboard Page */}
                 {isDashboard && (
                     <div >
-                        <div className="bg-gray-300 text-black text-center font-bold text-xl py-[1.4rem]">
+                        <div className="bg-gray-300 text-black text-center font-bold text-xl py-[1.4rem] shadow-sm">
                             <h1>Dashboard Page</h1>
                         </div>
                         <div>
+                            <div className="grid grid-cols-2 gap-6 p-6 bg-gray-100">
+                                {shareData.length > 0 ? (
+                                    Object.entries(
+                                        shareData.reduce((acc, item) => {
+                                            if (!acc[item.HouseName]) {
+                                                acc[item.HouseName] = [];
+                                            }
+                                            acc[item.HouseName].push(item);
+                                            return acc;
+                                        }, {})
+                                    ).map(([houseName, items]) => {
+                                        // Calculate the sum of payments for this group
+                                        const totalPayment = items.reduce((sum, item) => sum + item.Payment, 0);
 
+                                        return (
+                                            <div
+                                                key={houseName}
+                                                className="bg-white border border-gray-300 p-6 shadow-lg rounded-lg"
+                                            >
+                                                <h2 className="font-bold text-xl text-gray-800 border-b pb-2 mb-4">
+                                                    {houseName}
+                                                </h2>
+                                                <h3 className="font-semibold text-blue-700 mb-2 text-2xl">
+                                                    รายการส่ง:
+                                                </h3>
+                                                <div className="space-y-2 grid grid-cols-2">
+                                                    <p className="font-semibold text-blue-700  border-b  border-blue-700 text-2xl">
+                                                        ชื่อวง
+                                                    </p >
+                                                    <p className="font-semibold text-blue-700  border-b  border-blue-700 text-2xl">จำนวนเงิน</p>
+                                                    {items.map((item, index) => (
+                                                        <React.Fragment key={item.Number}>
+                                                            <p className="col-span-1 text-gray-700 bg-gray-50 p-2 rounded-md">
+                                                                {item.FundCircle}
+                                                            </p>
+                                                            <p className="col-span-1 text-gray-700 bg-gray-50 p-2 rounded-md text-right">
+                                                                {item.Payment} ฿
+                                                            </p>
+                                                        </React.Fragment>
+                                                    ))}
+                                                    <p></p>
+                                                    <p className="text-right text-xl font-bold text-red-500 mt-4">
+                                                        รวม: {totalPayment} ฿
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <p className="text-gray-600 text-center col-span-2">
+                                        No data available
+                                    </p>
+                                )}
+                            </div>
                         </div>
 
                     </div>
@@ -171,11 +233,13 @@ export default function Dashboard() {
                             <div className="">
                                 <form className=" space-x-2">
                                     <label>Group Type:
-                                    <select className="border border-4 py-1 px-1 focus:outline-none focus:shadow-outline rounded shadow" onChange={(e) => handleSelectChange(e)}>
-                                        <option>--เลือกวง--</option>
-                                        <option>วงขั้นบรรได</option>
-                                        <option>วงปิดต้น</option>
-                                    </select>
+                                        <select
+                                            className="border border-4 py-1 px-1 focus:outline-none focus:shadow-outline rounded shadow"
+                                            onChange={(e) => handleSelectChange(e)}>
+                                            <option>--เลือกวง--</option>
+                                            <option>วงขั้นบรรได</option>
+                                            <option>วงปิดต้น</option>
+                                        </select>
                                     </label>
                                 </form>
                             </div>
